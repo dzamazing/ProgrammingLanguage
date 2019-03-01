@@ -1,5 +1,6 @@
 #include<iostream>
-#include"malloc.h"
+
+//注：本文件下的所有排序函数，基本都未在函数开头进行参数异常判断，实际中应添加进去
 
 using namespace std;
 
