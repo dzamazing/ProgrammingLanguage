@@ -1,8 +1,16 @@
 #include<iostream>
 
+using namespace std;
+
 //注：本文件下的所有排序函数，基本都未在函数开头进行参数异常判断，实际中应添加进去
 
-using namespace std;
+//排序算法分类：（1）插入排序：直接插入排序        稳定   时间：n n^2 n^2         空间：1
+                             //希尔（shell）排序   不稳定 时间：n n^1.5 n^2       空间：1
+              //（2）选择排序：直接选择排序        不稳定 时间：n^2 n^2 n^2       空间：1
+                             //堆排序              不稳定 时间：nlogn nlogn nlogn 空间：1
+              //（3）交换排序：冒泡排序            稳定   时间：n n^2 n^2         空间：1
+                             //快速排序            不稳定 时间：nlogn nlogn n^2   空间：nlogn
+              //（4）归并排序                      稳定   时间：nlogn nlogn nlogn 空间：n
 
 //属性含义：稳定性 最优时间复杂度 平均时间复杂度 最坏时间复杂度 空间复杂度
 
@@ -29,6 +37,27 @@ void Bubble_Sort(int *list, int count)
 			if (list[j] > list[j + 1])  //因为这里会有j+1,所以判断条件为count-1
 				swap(list[j], list[j + 1]);
 	}
+}
+//冒泡排序的优化版本，这个版本才能体现冒泡排序的最优随时间复杂度为o(n)
+void Bubble_Sort_Plus(int *list, int count)
+{
+	bool didSwap;  //用来标记是否有进行过交换操作
+	int end;
+	for (int i = 0; i < count - 1; i++) {
+		didSwap = false;
+		end = count - 1 - i;
+		for (int j = 0; j < end; ++j)
+		{
+			if (list[j] > list[j + 1]) {
+				swap(list[j], list[j + 1]);
+				didSwap = true;
+			}
+		}
+		//如果没有进行过交换操作，说明顺序已经是排好了的
+		if (didSwap == false)
+			return;
+	}
+
 }
 
 //直接选择排序
@@ -59,9 +88,8 @@ void Select_Sort(int *list, int count)
 }
 
 //直接插入排序
-//思想：每一次从待排序的数据元素中选出最小（或最大）的一个元素，存放在序列的起始位置，
-      //然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。
-      //以此类推，直到全部待排序的数据元素排完。
+//思想：把n个待排序的元素看成一个有序表和一个无序表，开始时有序表中只有一个元素，无序表中有n-1个元素；
+      //排序过程即每次从无序表中取出第一个元素，将它插入到有序表中，使之成为新的有序表，重复n-1次完成整个排序过程。
 //属性：稳定 时间：n n^2 n^2 空间：1
 void Insert_Sort(int *list, int count)
 {
@@ -72,10 +100,11 @@ void Insert_Sort(int *list, int count)
 	//如果比有序区的要小则交换，直到合适的位置
 	for (i = 1; i < count; i++)
 	{
-		temp = list[i];
+		temp = list[i];  //从无序区中取一个元素
+		//将该元素插入到有序区的正确位置
 		for (j = i - 1; list[j] > temp&&j >= 0; j--)
 		{
-			list[j + 1] = list[j];
+			list[j + 1] = list[j];  //只要没找到合适的插入位置，就将有序表中的元素依次往后移一位
 		}
 		list[j + 1] = temp;
 	}
@@ -94,10 +123,14 @@ void Insert_Sort_Plus(int *list, int count)
 }
 
 //希尔（shell）排序
-//思想：算法先将要排序的一组数按某个增量d分成若干组，每组中记录的下标相差d.
-      //对每组中全部元素进行排序，然后再用一个较小的增量对它进行，在每组中再进行排序。
-      //当增量减到1时，整个要排序的数被分成一组，排序完成。
-      //一般的初次取序列的一半为增量，以后每次减半，直到增量为1。
+//思想：（1）希尔排序（shell sort）这个排序方法又称为缩小增量排序，是1959年D·L·Shell提出来的。该方法的基本思想是：
+           //设待排序元素序列有n个元素，首先取一个整数increment（小于n）作为间隔将全部元素分为increment个子序列，
+           //所有距离为increment的元素放在同一个子序列中，在每一个子序列中分别实行直接插入排序。
+           //然后缩小间隔increment，重复上述子序列划分和排序工作。
+           //直到最后取increment = 1，将所有元素放在同一个子序列中排序为止。
+      //（2）由于开始时，increment的取值较大，每个子序列中的元素较少，排序速度较快，到排序后期increment取值逐渐变小，
+           //子序列中元素个数逐渐增多，但由于前面工作的基础，大多数元素已经基本有序，所以排序速度仍然很快。
+
 //属性：不稳定 时间：n n^1.5 n^2 空间：1
 void Shell_Sort(int *list, int count)
 {
@@ -106,10 +139,10 @@ void Shell_Sort(int *list, int count)
 	int increment = count;
 
 	do {
-		increment = increment / 3 + 1;
-		for (i = increment; i < count; i++)
+		increment = increment / 3 + 1;    //更新增量
+		for (i = increment; i < count; i++)   //对每个划分进行直接插入排序
 		{
-			if (list[i] < list[i - increment])
+			if (list[i] < list[i - increment])//从无序区取一个元素，插入到对应子序列中的合适位置
 			{
 				temp = list[i];
 				for (j = i - increment; j >=0 && list[j] > temp; j -= increment)
@@ -122,22 +155,32 @@ void Shell_Sort(int *list, int count)
 	} while (increment > 1);
 }
 
-//堆排序
-//思想：
+//堆排序（大顶堆）
+//参考博客：https://www.cnblogs.com/0zcl/p/6737944.html
+//大顶堆概念：堆分为最大堆和最小堆，其实就是完全二叉树。
+            //最大堆要求节点的元素都要不小于其孩子，最小堆要求节点元素都不大于其左右孩子，
+            //两者对左右孩子的大小关系不做任何要求，其实很好理解。
+            //有了上面的定义，我们可以得知，处于最大堆的根节点的元素一定是这个堆中的最大值。
+//思想：1.将初始待排序关键字序列(R1,R2....Rn)构建成大顶堆，此堆为初始的无序区
+      //2.将堆顶元素R[1]与最后一个元素R[n]交换，此时得到新的无序区(R1, R2, ......Rn - 1)和新的有序区(Rn)
+      //3.由于交换后新的堆顶R[1]可能违反堆的性质，因此需要对当前无序区(R1, R2, ......Rn - 1)调整为新堆，
+        //然后再次将R[1]与无序区最后一个元素交换，得到新的无序区(R1, R2....Rn - 2)和新的有序区(Rn - 1, Rn)。
+        //不断重复此过程直到有序区的元素个数为n - 1，则整个排序过程完成
+//核心思想：每次都取堆顶的元素，将其放在序列最后面，然后将剩余的元素重新调整为最大堆，依次类推，最终得到排序的序列。
 //属性：不稳定 时间：nlogn nlogn nlogn 空间：1
 void Heap_Adjust(int *list, int s, int m)      //调整为一个堆
 {
 	int temp = list[s];
 	for (int j = 2 * s + 1; j <= m; j = 2 * j + 1)
 	{
-		if (list[j] < list[j + 1] && j < m)
+		if (list[j] < list[j + 1] && j < m)   //如果左子节点小于右子节点，则将目标节点定为右子节点
 		{
 			j++;
 		}
-		if (temp > list[j])
-			break;
-		list[s] = list[j];
-		s = j;
+		if (temp > list[j]) //将当前的堆顶元素与其子节点中较大的值进行比较，若根节点的值大于左右孩子节点的值，则循环结束
+			break;          //因为每次调整堆的原因只是原先的根节点与无序表的最后一个节点交换了而已，其他部分都是满足堆条件的
+		list[s] = list[j];  //将较大值移至根节点处
+		s = j;     //检查此次节点交换后对后面部分的堆性质是否产生了破坏 
 	}
 	list[s] = temp;
 }
@@ -171,6 +214,7 @@ void Heap_Sort(int *list, int len)
       //重复步骤3直到某一指针超出序列尾
       //将另一序列剩下的所有元素直接复制到合并序列尾
 //属性：稳定 时间：nlogn nlogn nlogn 空间：n
+//正常情况下归并排序的空间复杂度为O(n),但可以做到空间复杂度为O(1),但那样的话时间复杂度将会是O（n^2）
 void Merge(int *list,int *reg, int start, int end)
 {
 	if (start >= end)
@@ -202,8 +246,8 @@ void MSort(int *list, int *reg, int start, int end)
 	if (start < end)
 	{
 		int mid = start + (end - start ) / 2;   //避免溢出int
-		MSort(list, reg, start, mid);                //对左边进行排序
-		MSort(list, reg, mid + 1, end);              //对右边进行排序
+		MSort(list, reg, start, mid);           //对左边进行排序
+		MSort(list, reg, mid + 1, end);         //对右边进行排序
 		Merge(list, reg, start, end);           //把排序好的数据合并
 	}
 }
@@ -222,7 +266,7 @@ void Merge_Sort(int *list, int count)
 //属性：不稳定 时间：nlogn nlogn n^2 空间：nlogn
 int Partition(int *list, int low, int high)
 {
-	int pivotKey;
+	int pivotKey;   //轴心点
 	pivotKey = list[low];
 	while (low < high)
 	{
@@ -230,16 +274,17 @@ int Partition(int *list, int low, int high)
 		{
 			high--;
 		}
-		swap(list[low], list[high]);
+		swap(list[low], list[high]);  //将pivotKey移动到从后往前第一个比它小的位置，此时high后面的数组元素都大于pivotKey
 		while (low < high&&list[low] <= pivotKey)
 		{
 			low++;
 		}
-		swap(list[low], list[high]);
-	}
-	return low;
+		swap(list[low], list[high]);  //将pivotKey移动到从前往后第一个比它大的位置，此时low前面的数组元素都小于pivotKey
 
-	return low;
+		//每一轮循环结束都将low到high之间的范围缩小，直至low>=high,pivotKey的筛选过程完成
+	}
+	return low;  //返回轴心点最终移动到的位置
+
 }
 void QSort(int *list, int low, int high)
 {
@@ -276,8 +321,11 @@ int main()
 	int count2 = sizeof(TestData2) / sizeof(int);
 
 	////冒泡排序测试
-	//bubble_sort(testdata1, count1);
-	//bubble_sort(testdata2, count2);
+	//Bubble_Sort(TestData1, count1);
+	//Bubble_Sort(TestData2, count2);
+	////优化版的冒泡排序测试
+	//Bubble_Sort_Plus(TestData1, count1);
+	//Bubble_Sort_Plus(TestData2, count2);
 
 	////直接选择排序测试
 	//Select_Sort(TestData1, count1);
