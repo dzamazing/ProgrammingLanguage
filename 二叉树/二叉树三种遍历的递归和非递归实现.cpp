@@ -37,7 +37,7 @@ void createBinTree(BinTree &T) //&的意思是传进来节点指针的引用，括号内等价于 Bin
 
 //先序递归遍历
 //打印顺序： 根节点-左子节点-右子节点
-void preTraverse(BinTree T) 
+void preTraverse(BinTree T)  
 {
 	if (T != nullptr)
 	{
@@ -103,7 +103,7 @@ void preTraverse2(BinTree T)
 }
 
 //非递归中序遍历
-//处理过程：对于任一节点，
+//处理过程：对于任一节点p，
           //1.若其左孩子不为空，则将P入栈并将P的左孩子置为当前的P,然后对当前节点P再进行相同的处理
           //2.若其左孩子为空，则取栈顶元素并进行出栈操作，访问该栈顶节点，然后将当前的P置为栈顶节点的右孩子
           //3.直到P为NULL并且栈为空则遍历结束
