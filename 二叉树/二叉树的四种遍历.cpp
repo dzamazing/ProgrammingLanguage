@@ -1,8 +1,18 @@
 #include<iostream>
 #include<stack>
 #include<vector>
+#include<queue>
 
 using namespace std;
+
+//对于一颗二叉树，深度优先搜索(Depth First Search)是沿着树的深度遍历树的节点，尽可能深的搜索树的分支。
+//深度优先搜索二叉树是先访问根结点，然后遍历左子树接着是遍历右子树，因此我们可以利用堆栈的先进后出的特点，
+//先将右子树压栈，再将左子树压栈，这样左子树就位于栈顶，可以保证结点的左子树先与右子树被遍历。
+//前序遍历、中序遍历、后续遍历都属于深度优先遍历
+
+//广度优先搜索(Breadth First Search), 又叫宽度优先搜索或横向优先搜索，是从根结点开始沿着树的宽度搜索遍历，
+//可以利用队列实现广度优先搜索。
+//层次优先遍历就是广度优先遍历
 
 //树节点的结构
 typedef struct node{
@@ -30,14 +40,15 @@ void createBinTree(BinTree &T) //&的意思是传进来节点指针的引用，括号内等价于 Bin
 	T = new BinTreeNode(c);
 	createBinTree(T->lchild);
 	createBinTree(T->rchild);
-
 }
+
+
 
 /*******  二叉树的三种递归遍历 *******/
 
 //先序递归遍历
 //打印顺序： 根节点-左子节点-右子节点
-void preTraverse(BinTree T)  
+void preTraverse(BinTree T) 
 {
 	if (T != nullptr)
 	{
@@ -103,10 +114,13 @@ void preTraverse2(BinTree T)
 }
 
 //非递归中序遍历
-//处理过程：对于任一节点p，
-          //1.若其左孩子不为空，则将P入栈并将P的左孩子置为当前的P,然后对当前节点P再进行相同的处理
-          //2.若其左孩子为空，则取栈顶元素并进行出栈操作，访问该栈顶节点，然后将当前的P置为栈顶节点的右孩子
-          //3.直到P为NULL并且栈为空则遍历结束
+//处理过程：需要一个存储树节点的栈以及一个辅助树节点p,最开始令p节点指向根节点，然后进行一个循环操作：
+          //对于任一节点p，
+          //1.若p节点不为空（除第一次是根节点外，后面代表者上一个p节点的左子节点不为空），
+            //则将P入栈并将P的左子节点置为当前的P,然后对当前节点P再进行相同的处理
+          //2.若p节点为空，则令p节点指向当前的栈顶元素，打印栈顶节点的数据并将其进行出栈操作，
+            //然后将当前的P置为弹出的栈顶节点的右孩子
+          //3.直到P节点为空并且栈为空，则遍历结束
 void midTraverse2(BinTree T)
 {
 	if (T == nullptr)
@@ -191,6 +205,23 @@ void postTraverse2_2(BinTree T)
 	}
 }
 
+//广度优先遍历(层次遍历)
+void BreadthFirstSearch(BinTree T)
+{
+	queue<BinTree> q;
+	q.push(T);
+	while (!q.empty())
+	{
+		BinTree p = q.front();
+		cout << p->data << " ";
+		q.pop();
+		if (p->lchild != nullptr)
+			q.push(p->lchild);
+		if (p->rchild != nullptr)
+			q.push(p->rchild);
+	}
+}
+
 
 int main()
 {
@@ -198,6 +229,7 @@ int main()
 	          //先序遍历结果：abcdef
 	          //中序遍历结果：bcaedf
 	          //后续遍历结果：cbefda
+	          //层次遍历结果：abdcef
 	BinTree T;
 	cout << "开始创建二叉树，请输入树节点：";
 	createBinTree(T);
@@ -223,6 +255,9 @@ int main()
 	cout << endl;
 	cout << "非递归后序方法二遍历二叉树：" << endl;
 	postTraverse2_2(T);
+	cout << endl;
+	cout << "层次遍历二叉树：" << endl;
+	BreadthFirstSearch(T);
 	cout << endl;
 
 	////防止程序闪退
