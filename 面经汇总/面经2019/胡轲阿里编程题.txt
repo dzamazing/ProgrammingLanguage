@@ -1,0 +1,83 @@
+Hi, 您好！
+
+ 
+
+我是之前和您联系过的工程师。您收到以后把题目做完，发回给我即可。 伪代码即可。
+
+ 
+
+ 
+
+1. 请用C++实现在一个有序链表中插入结点，并且枚举4个以上的测试用例
+
+ 
+
+ 
+
+2. 现在分别有3个线程，分别只能输出1，2，3。例如:
+
+ 
+
+  public class Thread1 extends Thread {
+
+ 
+
+    public void run(){
+
+      while(true){
+
+         System.out.println("1");
+
+       }
+
+    }
+
+  }
+
+ 
+
+  public class Thread2 extends Thread {
+
+ 
+
+    while(true){
+
+         System.out.println("2");
+
+       }
+
+  }
+
+ 
+
+  public class Thread3 extends Thread {
+
+ 
+
+    public void run(){
+
+       while(true){
+
+         System.out.println("3");
+
+       }
+
+    }
+
+  }
+
+ 
+
+  请改写这些线程，让这三个线程在同时启动的情况下，永远得到 123123...的结果。
+
+ 
+
+  3.有一种特殊的封闭多边形，满足以下特性：在多边形内部任意指定两个点，这两个点的连线也在多边形内部。请写程序判断一个给出的多边形是否属于这种特殊多边形
+
+ 
+
+ 
+
+ 
+
+Regards
